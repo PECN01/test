@@ -3,18 +3,706 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A dummy HTML project for testing dynamic elements with JavaScript.">
-    <title>Index Page</title>
+    <meta name="description" content="A dark-themed community platform for ECN Web.">
+    <title>ECN Web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 20, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(100, 200, 255, 0.1);
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: none;
+        }
+
+        header.show {
+            display: block;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #b0b0b0;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: #00d4ff;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            color: #000;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .user-info {
+            color: #00d4ff;
+            font-size: 14px;
+        }
+
+        /* Pages Container */
+        .page {
+            display: none;
+            flex: 1;
+            width: 100%;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Main Container */
+        .container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            width: 100%;
+        }
+
+        /* Login Page */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: rgba(30, 40, 70, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            border-radius: 15px;
+            padding: 50px 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.1);
+        }
+
+        .auth-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 20, 40, 0.5);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(0, 212, 255, 0.6);
+            background: rgba(15, 20, 40, 0.8);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #707080;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #51cf66;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+        }
+
+        .action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            color: #a0a0a0;
+            font-size: 14px;
+        }
+
+        .auth-toggle a {
+            color: #00d4ff;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-toggle a:hover {
+            text-decoration: underline;
+        }
+
+        /* Post Feed */
+        .feed-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .post-compose {
+            background: rgba(30, 40, 70, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .post-compose:hover {
+            border-color: rgba(100, 200, 255, 0.5);
+            background: rgba(30, 40, 70, 0.8);
+        }
+
+        .post-compose-title {
+            color: #00d4ff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .post-compose textarea {
+            width: 100%;
+            background: rgba(15, 20, 40, 0.5);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 8px;
+            color: #e0e0e0;
+            padding: 12px 15px;
+            resize: vertical;
+            min-height: 100px;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .post-compose textarea:focus {
+            outline: none;
+            border-color: rgba(0, 212, 255, 0.6);
+            background: rgba(15, 20, 40, 0.8);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .post-compose textarea::placeholder {
+            color: #707080;
+        }
+
+        .post-card {
+            background: rgba(30, 40, 70, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .post-card:hover {
+            border-color: rgba(100, 200, 255, 0.5);
+            background: rgba(30, 40, 70, 0.8);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .post-author {
+            color: #00d4ff;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .post-timestamp {
+            color: #707080;
+            font-size: 12px;
+        }
+
+        .post-content {
+            color: #d0d0d0;
+            line-height: 1.6;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(100, 200, 255, 0.1);
+            color: #707080;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #707080;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(15, 20, 40, 0.5);
+            border-top: 1px solid rgba(100, 200, 255, 0.1);
+            padding: 30px 40px;
+            text-align: center;
+            color: #808080;
+            font-size: 13px;
+            display: none;
+        }
+
+        footer.show {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-card {
+                padding: 40px 25px;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+
+            .post-compose {
+                padding: 20px;
+            }
+
+            .post-card {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Description: This is a dummy HTML project created for testing purposes. It includes a heading, a paragraph, and a button that changes the text of the paragraph when clicked. The JavaScript function `changeText()` is responsible for updating the content of the paragraph with the id "dynamic-text". -->
-    <h1 style="color: lightgreen;">Hello, World!</h1>
-    <p id="dynamic-text">This is a dummy HTML file.</p>
-    <button onclick="changeText()">Click me to change the text!</button>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">⚡ ECN Web</div>
+            <ul class="nav-links">
+                <li><a onclick="showPage('home')">Home Feed</a></li>
+                <li><a onclick="showPage('post')">Create Post</a></li>
+                <li class="user-info" id="userInfo"></li>
+                <li><button class="logout-btn" onclick="logout()">Logout</button></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Login/Signup Page -->
+    <div class="page active" id="authPage">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h1 class="auth-title">ECN</h1>
+                <p class="auth-subtitle">Community Platform</p>
+
+                <!-- Signup Tab -->
+                <div id="signupForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="signupUsername" placeholder="At least 5 characters" maxlength="20">
+                        <div class="error-message" id="signupUsernameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signupPassword" placeholder="Enter your password">
+                        <div class="error-message" id="signupPasswordError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" placeholder="Confirm your password">
+                        <div class="error-message" id="signupConfirmError"></div>
+                    </div>
+
+                    <button class="action-btn" onclick="signup()">Create Account</button>
+
+                    <div class="auth-toggle">
+                        Already have an account? <a onclick="toggleAuthForm()">Login</a>
+                    </div>
+                </div>
+
+                <!-- Login Tab -->
+                <div id="loginForm" style="display: none;">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="loginUsername" placeholder="Enter your username">
+                        <div class="error-message" id="loginUsernameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password">
+                        <div class="error-message" id="loginPasswordError"></div>
+                    </div>
+
+                    <button class="action-btn" onclick="login()">Login</button>
+
+                    <div class="auth-toggle">
+                        Don't have an account? <a onclick="toggleAuthForm()">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Feed Page -->
+    <div class="page" id="homePage">
+        <div class="container">
+            <div class="feed-container" id="feedContainer">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📚</div>
+                    <div class="empty-state-text">No posts yet. Be the first to share something!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Post Page -->
+    <div class="page" id="postPage">
+        <div class="container">
+            <div class="feed-container">
+                <div class="post-compose">
+                    <div class="post-compose-title">What's on your mind?</div>
+                    <textarea id="postContent" placeholder="Share your thoughts with the community..."></textarea>
+                    <button class="action-btn" onclick="createPost()">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 ECN Web. Powered by cutting-edge technology.</p>
+    </footer>
 
     <script>
-        function changeText() {
-            document.getElementById('dynamic-text').innerText = 'The text has been dynamically changed!';
+        // Initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                showHomePage();
+            } else {
+                showAuthPage();
+            }
+        }
+
+        // Authentication Functions
+        function toggleAuthForm() {
+            const signupForm = document.getElementById('signupForm');
+            const loginForm = document.getElementById('loginForm');
+            signupForm.style.display = signupForm.style.display === 'none' ? 'block' : 'none';
+            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+            clearAllErrors();
+        }
+
+        function clearAllErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.classList.remove('show');
+            });
+        }
+
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+        }
+
+        function signup() {
+            clearAllErrors();
+            const username = document.getElementById('signupUsername').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+            // Validation
+            if (username.length < 5) {
+                showError('signupUsernameError', '❌ Username must be at least 5 characters');
+                return;
+            }
+
+            if (password.length === 0) {
+                showError('signupPasswordError', '❌ Password cannot be empty');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('signupConfirmError', '❌ Passwords do not match');
+                return;
+            }
+
+            // Check if username already exists
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            if (users[username]) {
+                showError('signupUsernameError', '❌ Username already exists');
+                return;
+            }
+
+            // Save new user
+            users[username] = { password: password };
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('currentUser', username);
+
+            // Clear form
+            document.getElementById('signupUsername').value = '';
+            document.getElementById('signupPassword').value = '';
+            document.getElementById('signupConfirmPassword').value = '';
+
+            showHomePage();
+        }
+
+        function login() {
+            clearAllErrors();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+            if (!users[username]) {
+                showError('loginUsernameError', '❌ Username not found');
+                return;
+            }
+
+            if (users[username].password !== password) {
+                showError('loginPasswordError', '❌ Incorrect password');
+                return;
+            }
+
+            localStorage.setItem('currentUser', username);
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+
+            showHomePage();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            showAuthPage();
+        }
+
+        // Page Navigation
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            if (pageName === 'home') {
+                document.getElementById('homePage').classList.add('active');
+                loadFeed();
+            } else if (pageName === 'post') {
+                document.getElementById('postPage').classList.add('active');
+            }
+        }
+
+        function showAuthPage() {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('authPage').classList.add('active');
+            document.querySelector('header').classList.remove('show');
+            document.querySelector('footer').classList.remove('show');
+        }
+
+        function showHomePage() {
+            const currentUser = localStorage.getItem('currentUser');
+            document.querySelector('header').classList.add('show');
+            document.querySelector('footer').classList.add('show');
+            document.getElementById('userInfo').textContent = `👤 ${currentUser}`;
+            showPage('home');
+        }
+
+        // Post Functions
+        function createPost() {
+            const content = document.getElementById('postContent').value.trim();
+            const currentUser = localStorage.getItem('currentUser');
+
+            if (!content) {
+                alert('Please write something before posting!');
+                return;
+            }
+
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            const post = {
+                id: Date.now(),
+                author: currentUser,
+                content: content,
+                timestamp: new Date().toLocaleString(),
+                likes: 0
+            };
+
+            posts.unshift(post);
+            localStorage.setItem('posts', JSON.stringify(posts));
+
+            document.getElementById('postContent').value = '';
+            alert('✅ Post created successfully!');
+            showPage('home');
+        }
+
+        function loadFeed() {
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            const feedContainer = document.getElementById('feedContainer');
+
+            if (posts.length === 0) {
+                feedContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <div class="empty-state-text">No posts yet. Be the first to share something!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            feedContainer.innerHTML = posts.map(post => `
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-author">👤 ${post.author}</div>
+                        <div class="post-timestamp">${post.timestamp}</div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    <div class="post-meta">
+                        <span>❤️ ${post.likes} likes</span>
+                    </div>
+                </div>
+            `).join('');
         }
     </script>
 </body>
